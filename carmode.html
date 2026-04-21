@@ -448,6 +448,11 @@
   // Poll every 15s
   fetchNowPlaying();
   setInterval(fetchNowPlaying, 15000);
+
+  // Registrar Service Worker (necesario para PWA)
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/CarMode/sw.js').catch(() => {});
+  }
 </script>
 </body>
 </html>
