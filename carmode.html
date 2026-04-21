@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>CarMode</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;600;800&family=Barlow:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #080810;
+    --surface: #10101c;
+    --card: #181828;
+    --border: rgba(255,255,255,0.06);
+    --accent: #e8ff00;
+    --accent-dim: rgba(232,255,0,0.15);
+    --text: #f4f4ff;
+    --muted: #5a5a88;
+    --playing-glow: rgba(232,255,0,0.2);
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+  html, body {
+    width:100%; height:100%;
+    background: var(--bg);
+    font-family: 'Barlow', sans-serif;
+    color: var(--text);
+    overflow: hidden;
+    touch-action: manipulation;
+  }
+
+  /* Fix para barras de navegación del navegador en móvil */
+  @supports (height: 100dvh) {
+    html, body { height: 100dvh; }
+  }
+
+  #portrait-hint {
+    display:none;
+    position:fixed; inset:0;
+    background: var(--bg);
+    flex-direction:column;
+    align-items:center; justify-content:center;
+    gap:20px; z-index:999;
+    text-align:center; padding:40px;
+  }
+  .rotate-icon { font-size:4rem; animation: rotateHint 2s ease-in-out infinite; }
+  @keyframes rotateHint { 0%,100%{transform:rotate(0deg)} 50%{transform:rotate(90deg)} }
+  #portrait-hint p { color:var(--muted); font-size:1rem; }
+  #portrait-hint strong { color:var(--text); font-size:1.2rem; font-family:'Barlow Condensed',sans-serif; letter-spacing:0.1em; }
+
+  @media (orientation:portrait) and (max-width:500px) {
+    #portrait-hint { display:flex; }
+  }
+
+  #app {
+    position:relative; z-index:1;
+    width:100%;
+    height: 100vh;
+    height: 100dvh;
+    display:grid;
+    grid-template-rows: auto 1fr auto;
+    grid-template-columns: auto 1fr;
+    gap:14px;
+    padding:14px 18px;
+  }
+
+  .topbar {
+    grid-column: 1 / -1;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+  }
+
+  .logo {
+    font-family:'Barlow Condensed',sans-serif;
+    font-weight:800;
+    font-size:1rem;
+    letter-spacing:0.25em;
+    text-transform:uppercase;
+    color: var(--accent);
+  }
+
+  .topbar-right { display:flex; align-items:center; gap:16px; }
+
+  .clock {
+    font-family:'Barlow Condensed',sans-serif;
+    font-size:1.4rem;
+    font-weight:600;
+    letter-spacing:0.05em;
+  }
+
+  .lastfm-badge {
+    display:flex; align-items:center; gap:6px;
+    background: rgba(188,0,0,0.15);
+    border:1px solid rgba(188,0,0,0.3);
+    border-radius:20px;
+    padding:4px 10px;
+    font-size:0.65rem; font-weight:600;
+    color:#ff4444;
+    letter-spacing:0.1em; text-transform:uppercase;
+  }
+
+  .live-dot {
+    width:6px; height:6px; border-radius:50%;
+    background:#ff4444;
+    animation:livepulse 1.5s infinite;
+  }
+  @keyframes livepulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  .album-col {
+    grid-column:1; grid-row:2;
+    display:flex; align-items:center;
+  }
+
+  .album-wrap {
+    position:relative;
+    width: clamp(110px, 20vw, 190px);
+    aspect-ratio:1;
+    border-radius:16px;
+    overflow:hidden;
+    box-shadow: 0 0 0 1px var(--border), 0 8px 40px rgba(0,0,0,0.7);
+    transition: box-shadow 0.6s ease;
+    background: linear-gradient(135deg, #12122a, #1a1a3a);
+  }
+
+  .album-wrap.playing {
+    box-shadow: 0 0 0 1px rgba(232,255,0,0.35), 0 0 50px var(--playing-glow), 0 8px 40px rgba(0,0,0,0.7);
+  }
+
+  #albumImg {
+    width:100%; height:100%;
+    object-fit:cover; display:block;
+    transition: opacity 0.4s ease;
+    position:absolute; inset:0;
+  }
+
+  .album-placeholder {
+    width:100%; height:100%;
+    display:flex; align-items:center; justify-content:center;
+    font-size:3rem; opacity:0.2;
+  }
+
+  .track-col {
+    grid-column:2; grid-row:2;
+    display:flex; flex-direction:column;
+    justify-content:center;
+    gap:8px; padding-left:4px; min-width:0;
+  }
+
+  .now-label {
+    font-size:0.65rem; font-weight:600;
+    color:var(--muted);
+    letter-spacing:0.2em; text-transform:uppercase;
+  }
+
+  .track-title {
+    font-family:'Barlow Condensed',sans-serif;
+    font-size: clamp(1.3rem, 4vw, 2.2rem);
+    font-weight:800; line-height:1.1;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+
+  .track-artist {
+    font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+    font-weight:300; color:var(--muted);
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+
+  .track-album {
+    font-size:0.75rem; color:rgba(90,90,136,0.6);
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+
+  .scrobbles {
+    display:inline-flex; align-items:center; gap:5px;
+    background:var(--card); border:1px solid var(--border);
+    border-radius:20px; padding:3px 10px;
+    font-size:0.65rem; color:var(--muted);
+    width:fit-content;
+  }
+
+  .controls-row {
+    grid-column: 1 / -1;
+    display:grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap:10px;
+  }
+
+  .btn {
+    background: var(--card);
+    border:1px solid var(--border);
+    border-radius:16px;
+    display:flex; flex-direction:column;
+    align-items:center; justify-content:center;
+    aspect-ratio:1; cursor:pointer;
+    transition: all 0.12s ease;
+    overflow:hidden;
+    -webkit-user-select:none; user-select:none;
+    text-decoration:none; color:var(--text);
+  }
+
+  .btn:active { transform:scale(0.90); }
+  .btn svg { width:34%; height:34%; }
+  .btn-label { font-size:0.58rem; margin-top:5px; color:var(--muted); letter-spacing:0.08em; font-weight:600; text-transform:uppercase; }
+
+  .btn.spotify { background:#111f11; border-color:rgba(30,215,96,0.2); }
+  .btn.spotify svg { color:#1DB954; }
+  .btn.spotify .btn-label { color:#1DB954; opacity:0.7; }
+  .btn.spotify:active { background:#1DB954; }
+  .btn.spotify:active .btn-label { color:#000; opacity:1; }
+
+  .btn.ivoox { background:#160e26; border-color:rgba(108,63,160,0.3); }
+  .btn.ivoox svg { color:#9b6dd6; }
+  .btn.ivoox .btn-label { color:#9b6dd6; opacity:0.7; }
+
+  .btn.maps { background:#0a1520; border-color:rgba(66,133,244,0.2); }
+  .btn.maps svg { color:#4285F4; }
+  .btn.maps .btn-label { color:#4285F4; opacity:0.7; }
+
+  .btn.phone { background:#0a2014; border-color:rgba(37,211,102,0.2); }
+  .btn.phone svg { color:#25D366; }
+  .btn.phone .btn-label { color:#25D366; opacity:0.7; }
+
+  .btn.refresh { background:var(--accent-dim); border-color:rgba(232,255,0,0.25); }
+  .btn.refresh svg { color:var(--accent); }
+  .btn.refresh .btn-label { color:var(--accent); opacity:0.8; }
+  .btn.refresh:active { background:var(--accent); }
+  .btn.refresh:active svg { color:#000; }
+
+  .spin { animation: spin 0.7s linear; }
+  @keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+
+  #toast {
+    position:fixed; bottom:70px; left:50%;
+    transform:translateX(-50%);
+    background:rgba(20,20,40,0.95);
+    border:1px solid var(--border);
+    border-radius:12px; padding:8px 18px;
+    font-size:0.8rem; color:var(--muted);
+    white-space:nowrap; opacity:0;
+    transition:opacity 0.3s; z-index:100;
+    pointer-events:none;
+  }
+  #toast.show { opacity:1; }
+</style>
+</head>
+<body>
+
+<div id="portrait-hint">
+  <div class="rotate-icon">📱</div>
+  <strong>Gira el móvil</strong>
+  <p>CarMode funciona en horizontal</p>
+</div>
+
+<div id="app">
+
+  <div class="topbar">
+    <div class="logo">🚗 CarMode</div>
+    <div class="topbar-right">
+      <div class="lastfm-badge">
+        <div class="live-dot"></div>
+        Last.fm · yorikqq
+      </div>
+      <div class="clock" id="clockEl">--:--</div>
+    </div>
+  </div>
+
+  <div class="album-col">
+    <div class="album-wrap" id="albumWrap">
+      <div class="album-placeholder" id="albumPlaceholder">🎵</div>
+      <img id="albumImg" src="" alt="" style="opacity:0; display:none;">
+    </div>
+  </div>
+
+  <div class="track-col">
+    <div class="now-label" id="nowLabel">Esperando música...</div>
+    <div class="track-title" id="trackTitle">—</div>
+    <div class="track-artist" id="trackArtist">Abre Spotify y dale al play</div>
+    <div class="track-album" id="trackAlbum"></div>
+    <div class="scrobbles" id="scrobblesBadge" style="display:none">
+      ♫ <span id="scrobblesCount">0</span> scrobbles totales
+    </div>
+  </div>
+
+  <div class="controls-row">
+
+    <a class="btn spotify" href="spotify://">
+      <svg viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
+      </svg>
+      <span class="btn-label">Spotify</span>
+    </a>
+
+    <a class="btn ivoox" href="ivoox://">
+      <svg viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/>
+      </svg>
+      <span class="btn-label">iVoox</span>
+    </a>
+
+    <a class="btn maps" href="maps://">
+      <svg viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+      </svg>
+      <span class="btn-label">Mapas</span>
+    </a>
+
+    <a class="btn phone" href="tel:">
+      <svg viewBox="0 0 24 24" fill="currentColor">
+        <path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1-9.4 0-17-7.6-17-17 0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1L6.6 10.8z"/>
+      </svg>
+      <span class="btn-label">Teléfono</span>
+    </a>
+
+    <div class="btn refresh" onclick="fetchNowPlaying(true)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" id="refreshIcon">
+        <path d="M23 4v6h-6M1 20v-6h6"/>
+        <path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/>
+      </svg>
+      <span class="btn-label">Actualizar</span>
+    </div>
+
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+  const API_KEY  = '4dfa3064c023422534817b274234f351';
+  const USER     = 'yorikqq';
+  const BASE_URL = 'https://ws.audioscrobbler.com/2.0/';
+
+  let lastKey = '';
+
+  // Clock
+  function tick() {
+    const n = new Date();
+    document.getElementById('clockEl').textContent =
+      String(n.getHours()).padStart(2,'0') + ':' + String(n.getMinutes()).padStart(2,'0');
+  }
+  tick(); setInterval(tick, 15000);
+
+  // Toast
+  function toast(msg, ms = 2500) {
+    const el = document.getElementById('toast');
+    el.textContent = msg; el.classList.add('show');
+    setTimeout(() => el.classList.remove('show'), ms);
+  }
+
+  // Main fetch
+  async function fetchNowPlaying(manual = false) {
+    if (manual) {
+      const icon = document.getElementById('refreshIcon');
+      icon.classList.add('spin');
+      setTimeout(() => icon.classList.remove('spin'), 700);
+    }
+
+    try {
+      const url = `${BASE_URL}?method=user.getrecenttracks&user=${USER}&api_key=${API_KEY}&format=json&limit=1`;
+      const r = await fetch(url);
+      const d = await r.json();
+
+      if (d.error) { toast('Error: ' + d.message); return; }
+
+      const list = d.recenttracks?.track;
+      if (!list) { toast('Sin datos de Last.fm'); return; }
+
+      const track = Array.isArray(list) ? list[0] : list;
+      const nowPlaying = track['@attr']?.nowplaying === 'true';
+      const title  = track.name || '—';
+      const artist = track.artist?.['#text'] || track.artist || '—';
+      const album  = track.album?.['#text'] || '';
+      const key    = title + '|' + artist;
+
+      if (manual && !nowPlaying) toast('Nada sonando ahora mismo');
+
+      if (key !== lastKey || manual) {
+        lastKey = key;
+        renderTrack(title, artist, album, track.image, nowPlaying);
+      }
+
+      // Fetch scrobble count once
+      fetchStats();
+
+    } catch(e) {
+      if (manual) toast('Sin conexión');
+    }
+  }
+
+  async function fetchStats() {
+    try {
+      const url = `${BASE_URL}?method=user.getinfo&user=${USER}&api_key=${API_KEY}&format=json`;
+      const r = await fetch(url);
+      const d = await r.json();
+      if (d.user?.playcount) {
+        document.getElementById('scrobblesCount').textContent =
+          Number(d.user.playcount).toLocaleString('es-ES');
+        document.getElementById('scrobblesBadge').style.display = 'inline-flex';
+      }
+    } catch(e) {}
+  }
+
+  function renderTrack(title, artist, album, images, nowPlaying) {
+    document.getElementById('trackTitle').textContent  = title;
+    document.getElementById('trackArtist').textContent = artist;
+    document.getElementById('trackAlbum').textContent  = album;
+
+    const lbl = document.getElementById('nowLabel');
+    const wrap = document.getElementById('albumWrap');
+
+    if (nowPlaying) {
+      lbl.textContent = '▶ Sonando ahora';
+      lbl.style.color = 'var(--accent)';
+      wrap.classList.add('playing');
+    } else {
+      lbl.textContent = 'Última escuchada';
+      lbl.style.color = 'var(--muted)';
+      wrap.classList.remove('playing');
+    }
+
+    // Album art
+    const img   = document.getElementById('albumImg');
+    const ph    = document.getElementById('albumPlaceholder');
+    const large = images?.find(i => i.size === 'extralarge') || images?.[images.length - 1];
+    const src   = large?.['#text'] || '';
+
+    if (src && !src.includes('2a96cbd8b46e442fc41c2b86b821562f')) {
+      img.style.opacity = '0';
+      img.style.display = 'block';
+      ph.style.display  = 'none';
+      img.onload  = () => { img.style.opacity = '1'; };
+      img.onerror = () => { img.style.display = 'none'; ph.style.display = 'flex'; };
+      img.src = src;
+    } else {
+      img.style.display = 'none';
+      ph.style.display  = 'flex';
+    }
+  }
+
+  // Poll every 15s
+  fetchNowPlaying();
+  setInterval(fetchNowPlaying, 15000);
+</script>
+</body>
+</html>
