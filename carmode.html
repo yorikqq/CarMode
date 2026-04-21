@@ -27,7 +27,7 @@
   * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
 
   html, body {
-    width:100%; height:100%; height:100dvh;
+    width:100%; height:100dvh;
     background: var(--bg);
     font-family: 'Barlow', sans-serif;
     color: var(--text);
@@ -35,27 +35,20 @@
     touch-action: manipulation;
   }
 
-  /* Portrait hint */
   #portrait-hint {
     display:none;
-    position:fixed; inset:0;
-    background: var(--bg);
-    flex-direction:column;
-    align-items:center; justify-content:center;
-    gap:20px; z-index:999;
-    text-align:center; padding:40px;
+    position:fixed; inset:0; background:var(--bg);
+    flex-direction:column; align-items:center; justify-content:center;
+    gap:20px; z-index:999; text-align:center; padding:40px;
   }
-  .rotate-icon { font-size:4rem; animation: rotateHint 2s ease-in-out infinite; }
+  .rotate-icon { font-size:4rem; animation:rotateHint 2s ease-in-out infinite; }
   @keyframes rotateHint { 0%,100%{transform:rotate(0deg)} 50%{transform:rotate(90deg)} }
   #portrait-hint p { color:var(--muted); font-size:1rem; }
   #portrait-hint strong { color:var(--text); font-size:1.2rem; font-family:'Barlow Condensed',sans-serif; letter-spacing:0.1em; }
-  @media (orientation:portrait) and (max-width:500px) {
-    #portrait-hint { display:flex; }
-  }
+  @media (orientation:portrait) and (max-width:500px) { #portrait-hint { display:flex; } }
 
-  /* App layout */
   #app {
-    width:100%; height:100vh; height:100dvh;
+    width:100%; height:100dvh;
     display:grid;
     grid-template-rows: auto 1fr auto;
     grid-template-columns: auto 1fr;
@@ -68,32 +61,27 @@
     grid-column: 1 / -1;
     display:flex; align-items:center; justify-content:space-between;
   }
-
   .logo {
-    font-family:'Barlow Condensed', sans-serif;
+    font-family:'Barlow Condensed',sans-serif;
     font-weight:800; font-size:1rem;
     letter-spacing:0.25em; text-transform:uppercase;
-    color: var(--accent);
+    color:var(--accent);
   }
-
   .topbar-right { display:flex; align-items:center; gap:14px; }
-
   .clock {
-    font-family:'Barlow Condensed', sans-serif;
+    font-family:'Barlow Condensed',sans-serif;
     font-size:1.5rem; font-weight:600; letter-spacing:0.05em;
   }
-
   .lastfm-badge {
     display:flex; align-items:center; gap:6px;
-    background: rgba(188,0,0,0.15);
-    border:1px solid rgba(188,0,0,0.3);
+    background:rgba(188,0,0,0.15); border:1px solid rgba(188,0,0,0.3);
     border-radius:20px; padding:4px 10px;
-    font-size:0.65rem; font-weight:600;
-    color:#ff5555; letter-spacing:0.1em; text-transform:uppercase;
+    font-size:0.65rem; font-weight:600; color:#ff5555;
+    letter-spacing:0.1em; text-transform:uppercase;
   }
   .live-dot {
     width:6px; height:6px; border-radius:50%; background:#ff5555;
-    animation: livepulse 1.5s infinite;
+    animation:livepulse 1.5s infinite;
   }
   @keyframes livepulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
 
@@ -102,24 +90,21 @@
     grid-column:1; grid-row:2;
     display:flex; align-items:center;
   }
-
   .album-wrap {
     position:relative;
-    width: clamp(100px, 20vw, 185px);
-    aspect-ratio:1;
-    border-radius:16px; overflow:hidden;
+    width:clamp(100px, 20vw, 185px);
+    aspect-ratio:1; border-radius:16px; overflow:hidden;
     box-shadow: 0 0 0 1px var(--border), 0 8px 32px rgba(0,0,0,0.7);
-    background: linear-gradient(135deg, #12122a, #1a1a3a);
-    transition: box-shadow 0.5s ease;
+    background:linear-gradient(135deg, #12122a, #1a1a3a);
+    transition:box-shadow 0.5s ease;
   }
   .album-wrap.playing {
     box-shadow: 0 0 0 1px rgba(232,255,0,0.35), 0 0 40px var(--glow), 0 8px 32px rgba(0,0,0,0.7);
   }
-
   #albumImg {
     width:100%; height:100%; object-fit:cover;
     position:absolute; inset:0; display:none;
-    transition: opacity 0.4s;
+    transition:opacity 0.4s;
   }
   .album-placeholder {
     width:100%; height:100%;
@@ -134,30 +119,25 @@
     justify-content:center;
     gap:8px; padding-left:6px; min-width:0;
   }
-
   .now-label {
-    font-size:0.65rem; font-weight:600;
-    color:var(--muted); letter-spacing:0.2em; text-transform:uppercase;
+    font-size:0.65rem; font-weight:600; color:var(--muted);
+    letter-spacing:0.2em; text-transform:uppercase;
   }
-
   .track-title {
-    font-family:'Barlow Condensed', sans-serif;
-    font-size: clamp(1.4rem, 4.5vw, 2.4rem);
+    font-family:'Barlow Condensed',sans-serif;
+    font-size:clamp(1.4rem, 4.5vw, 2.4rem);
     font-weight:800; line-height:1.05;
     white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
   }
-
   .track-artist {
-    font-size: clamp(0.9rem, 2.5vw, 1.15rem);
+    font-size:clamp(0.9rem, 2.5vw, 1.15rem);
     font-weight:300; color:var(--muted);
     white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
   }
-
   .track-album {
     font-size:0.75rem; color:rgba(90,90,136,0.55);
     white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
   }
-
   .scrobbles {
     display:inline-flex; align-items:center; gap:5px;
     background:var(--card); border:1px solid var(--border);
@@ -165,59 +145,36 @@
     font-size:0.65rem; color:var(--muted); width:fit-content;
   }
 
-  /* Controls — solo 3 botones grandes */
+  /* Bottom: solo botón de Spotify */
   .controls-row {
     grid-column: 1 / -1;
-    display:grid;
-    grid-template-columns: 1fr 1.5fr 1fr;
-    gap:12px;
-    padding: 0 6%;
+    display:flex;
+    justify-content:center;
+    padding-bottom:4px;
   }
 
-  .btn {
-    background: var(--card);
-    border:1px solid var(--border);
+  .spotify-btn {
+    display:flex; align-items:center; justify-content:center; gap:14px;
+    background:#1a2a1a; border:1px solid rgba(30,215,96,0.25);
     border-radius:20px;
-    display:flex; flex-direction:column;
-    align-items:center; justify-content:center;
-    aspect-ratio:1; cursor:pointer;
-    transition: all 0.12s ease;
+    padding:0 32px;
+    height:clamp(56px, 8vh, 72px);
+    width:clamp(200px, 45%, 320px);
+    cursor:pointer; text-decoration:none; color:var(--text);
+    transition:all 0.12s ease;
     -webkit-user-select:none; user-select:none;
-    color:var(--text);
   }
-  .btn:active { transform:scale(0.91); background:var(--surface); }
-  .btn svg { width:44%; height:44%; }
-  .btn-label {
-    font-size:0.6rem; margin-top:6px;
-    color:var(--muted); letter-spacing:0.08em;
-    font-weight:600; text-transform:uppercase;
-  }
+  .spotify-btn:active { transform:scale(0.95); background:#1DB954; }
+  .spotify-btn:active .spotify-label { color:#000; }
+  .spotify-btn:active svg { color:#000; }
 
-  /* Play button highlighted */
-  .btn.play-btn {
-    background: var(--accent-dim);
-    border-color: rgba(232,255,0,0.3);
-    box-shadow: 0 0 20px rgba(232,255,0,0.08);
+  .spotify-btn svg { width:28px; height:28px; color:#1DB954; flex-shrink:0; }
+  .spotify-label {
+    font-family:'Barlow Condensed',sans-serif;
+    font-size:1rem; font-weight:600;
+    letter-spacing:0.1em; text-transform:uppercase;
+    color:#1DB954;
   }
-  .btn.play-btn svg { color:var(--accent); width:50%; height:50%; }
-  .btn.play-btn .btn-label { color:var(--accent); opacity:0.85; }
-  .btn.play-btn:active { background:var(--accent); box-shadow:none; }
-  .btn.play-btn:active svg { color:#000; }
-  .btn.play-btn:active .btn-label { color:#000; }
-
-  /* Toast */
-  #toast {
-    position:fixed; bottom:60px; left:50%;
-    transform:translateX(-50%);
-    background:rgba(20,20,40,0.95);
-    border:1px solid var(--border);
-    border-radius:12px; padding:8px 18px;
-    font-size:0.8rem; color:var(--muted);
-    white-space:nowrap; opacity:0;
-    transition:opacity 0.3s; z-index:100;
-    pointer-events:none;
-  }
-  #toast.show { opacity:1; }
 </style>
 </head>
 <body>
@@ -230,7 +187,6 @@
 
 <div id="app">
 
-  <!-- Top bar -->
   <div class="topbar">
     <div class="logo">🚗 CarMode</div>
     <div class="topbar-right">
@@ -242,7 +198,6 @@
     </div>
   </div>
 
-  <!-- Album art -->
   <div class="album-col">
     <div class="album-wrap" id="albumWrap">
       <div class="album-placeholder" id="albumPlaceholder">🎵</div>
@@ -250,7 +205,6 @@
     </div>
   </div>
 
-  <!-- Track info -->
   <div class="track-col">
     <div class="now-label" id="nowLabel">Esperando música...</div>
     <div class="track-title" id="trackTitle">—</div>
@@ -261,46 +215,23 @@
     </div>
   </div>
 
-  <!-- 3 controles -->
   <div class="controls-row">
-
-    <!-- Anterior -->
-    <div class="btn" onclick="toast('Usa los controles de Spotify 🎵')">
+    <a class="spotify-btn" href="spotify://">
       <svg viewBox="0 0 24 24" fill="currentColor">
-        <path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/>
+        <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
       </svg>
-      <span class="btn-label">Anterior</span>
-    </div>
-
-    <!-- Play / Pausa -->
-    <div class="btn play-btn" onclick="toast('Usa los controles de Spotify 🎵')">
-      <svg viewBox="0 0 24 24" fill="currentColor" id="playIcon">
-        <path d="M8 5v14l11-7z"/>
-      </svg>
-      <span class="btn-label" id="playLabel">Play</span>
-    </div>
-
-    <!-- Siguiente -->
-    <div class="btn" onclick="toast('Usa los controles de Spotify 🎵')">
-      <svg viewBox="0 0 24 24" fill="currentColor">
-        <path d="M6 18l8.5-6L6 6v12zm2.5-6 6-4.25v8.5L8.5 12zM16 6h2v12h-2z"/>
-      </svg>
-      <span class="btn-label">Siguiente</span>
-    </div>
-
+      <span class="spotify-label">Abrir Spotify</span>
+    </a>
   </div>
-</div>
 
-<div id="toast"></div>
+</div>
 
 <script>
   const API_KEY  = '4dfa3064c023422534817b274234f351';
   const USER     = 'yorikqq';
   const BASE_URL = 'https://ws.audioscrobbler.com/2.0/';
-
   let lastKey = '';
 
-  // Clock
   function tick() {
     const n = new Date();
     document.getElementById('clockEl').textContent =
@@ -308,66 +239,43 @@
   }
   tick(); setInterval(tick, 15000);
 
-  // Toast
-  function toast(msg, ms = 2500) {
-    const el = document.getElementById('toast');
-    el.textContent = msg; el.classList.add('show');
-    setTimeout(() => el.classList.remove('show'), ms);
-  }
-
-  // Fetch now playing
   async function fetchNowPlaying() {
     try {
-      const url = `${BASE_URL}?method=user.getrecenttracks&user=${USER}&api_key=${API_KEY}&format=json&limit=1`;
-      const r = await fetch(url);
+      const r = await fetch(`${BASE_URL}?method=user.getrecenttracks&user=${USER}&api_key=${API_KEY}&format=json&limit=1`);
       const d = await r.json();
       if (d.error) return;
-
       const list = d.recenttracks?.track;
       if (!list) return;
-
       const track = Array.isArray(list) ? list[0] : list;
       const nowPlaying = track['@attr']?.nowplaying === 'true';
       const title  = track.name || '—';
       const artist = track.artist?.['#text'] || track.artist || '—';
       const album  = track.album?.['#text'] || '';
       const key    = title + '|' + artist;
-
-      if (key !== lastKey) {
-        lastKey = key;
-        renderTrack(title, artist, album, track.image, nowPlaying);
-      } else {
-        // Update playing state even if same track
-        updatePlayingState(nowPlaying);
-      }
-
-      fetchStats();
+      if (key !== lastKey) { lastKey = key; renderTrack(title, artist, album, track.image, nowPlaying); fetchStats(); }
+      else updateState(nowPlaying);
     } catch(e) {}
   }
 
   async function fetchStats() {
     try {
-      const url = `${BASE_URL}?method=user.getinfo&user=${USER}&api_key=${API_KEY}&format=json`;
-      const r = await fetch(url);
+      const r = await fetch(`${BASE_URL}?method=user.getinfo&user=${USER}&api_key=${API_KEY}&format=json`);
       const d = await r.json();
       if (d.user?.playcount) {
-        document.getElementById('scrobblesCount').textContent =
-          Number(d.user.playcount).toLocaleString('es-ES');
+        document.getElementById('scrobblesCount').textContent = Number(d.user.playcount).toLocaleString('es-ES');
         document.getElementById('scrobblesBadge').style.display = 'inline-flex';
       }
     } catch(e) {}
   }
 
-  function updatePlayingState(nowPlaying) {
+  function updateState(nowPlaying) {
     const lbl  = document.getElementById('nowLabel');
     const wrap = document.getElementById('albumWrap');
     if (nowPlaying) {
-      lbl.textContent = '▶ Sonando ahora';
-      lbl.style.color = 'var(--accent)';
+      lbl.textContent = '▶ Sonando ahora'; lbl.style.color = 'var(--accent)';
       wrap.classList.add('playing');
     } else {
-      lbl.textContent = 'Última escuchada';
-      lbl.style.color = 'var(--muted)';
+      lbl.textContent = 'Última escuchada'; lbl.style.color = 'var(--muted)';
       wrap.classList.remove('playing');
     }
   }
@@ -376,32 +284,24 @@
     document.getElementById('trackTitle').textContent  = title;
     document.getElementById('trackArtist').textContent = artist;
     document.getElementById('trackAlbum').textContent  = album;
-    updatePlayingState(nowPlaying);
-
-    const img = document.getElementById('albumImg');
-    const ph  = document.getElementById('albumPlaceholder');
+    updateState(nowPlaying);
+    const img   = document.getElementById('albumImg');
+    const ph    = document.getElementById('albumPlaceholder');
     const large = images?.find(i => i.size === 'extralarge') || images?.[images.length-1];
-    const src = large?.['#text'] || '';
-
-    // Last.fm default "no image" hash
+    const src   = large?.['#text'] || '';
     if (src && !src.includes('2a96cbd8b46e442fc41c2b86b821562f')) {
-      img.style.opacity = '0';
-      img.style.display = 'block';
-      ph.style.display  = 'none';
+      img.style.opacity = '0'; img.style.display = 'block'; ph.style.display = 'none';
       img.onload  = () => { img.style.opacity = '1'; };
       img.onerror = () => { img.style.display = 'none'; ph.style.display = 'flex'; };
       img.src = src;
     } else {
-      img.style.display = 'none';
-      ph.style.display  = 'flex';
+      img.style.display = 'none'; ph.style.display = 'flex';
     }
   }
 
-  // Poll every 15s
   fetchNowPlaying();
   setInterval(fetchNowPlaying, 15000);
 
-  // Service Worker
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/CarMode/sw.js').catch(() => {});
   }
