@@ -17,7 +17,6 @@
     --card: #181828;
     --border: rgba(255,255,255,0.06);
     --accent: #e8ff00;
-    --accent-dim: rgba(232,255,0,0.12);
     --text: #f4f4ff;
     --muted: #5a5a88;
     --glow: rgba(232,255,0,0.22);
@@ -41,23 +40,25 @@
   }
   .rotate-icon { font-size:4rem; animation:rotateHint 2s ease-in-out infinite; }
   @keyframes rotateHint { 0%,100%{transform:rotate(0deg)} 50%{transform:rotate(90deg)} }
-  #portrait-hint p { color:var(--muted); font-size:1rem; }
-  #portrait-hint strong { color:var(--text); font-size:1.2rem; font-family:'Barlow Condensed',sans-serif; letter-spacing:0.1em; }
+  #portrait-hint p { color:var(--muted); }
+  #portrait-hint strong { color:var(--text); font-family:'Barlow Condensed',sans-serif; letter-spacing:0.1em; font-size:1.2rem; }
   @media (orientation:portrait) and (max-width:500px) { #portrait-hint { display:flex; } }
 
-  /* Layout: topbar + main row + bottom button */
+  /* Full layout */
   #app {
     width:100%; height:100dvh;
     display:grid;
-    grid-template-rows: auto 1fr auto;
-    gap:0;
-    padding:10px 16px 12px;
+    grid-template-columns: auto 1fr;
+    grid-template-rows: auto 1fr;
+    gap:14px;
+    padding:12px 14px;
+    position:relative;
   }
 
-  /* Top bar */
+  /* Top bar — full width */
   .topbar {
+    grid-column: 1 / -1;
     display:flex; align-items:center; justify-content:space-between;
-    margin-bottom:10px;
   }
   .logo {
     font-family:'Barlow Condensed',sans-serif;
@@ -66,10 +67,13 @@
     color:var(--accent);
   }
   .topbar-right { display:flex; align-items:center; gap:14px; }
+
   .clock {
     font-family:'Barlow Condensed',sans-serif;
-    font-size:1.6rem; font-weight:600; letter-spacing:0.03em;
+    font-size:2.2rem; font-weight:700; letter-spacing:0.03em;
+    line-height:1;
   }
+
   .lastfm-badge {
     display:flex; align-items:center; gap:6px;
     background:rgba(188,0,0,0.15); border:1px solid rgba(188,0,0,0.3);
@@ -83,28 +87,19 @@
   }
   @keyframes livepulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
 
-  /* Main row: album + info */
-  .main-row {
-    display:grid;
-    grid-template-columns: auto 1fr;
-    gap:20px;
-    align-items:center;
-    min-height:0;
-  }
-
-  /* Album — mucho más grande */
+  /* Album — ocupa toda la altura disponible */
   .album-wrap {
+    grid-column:1; grid-row:2;
     position:relative;
-    height:calc(100dvh - 120px);
+    height:100%;
     aspect-ratio:1;
-    border-radius:20px; overflow:hidden;
+    border-radius:18px; overflow:hidden;
     box-shadow: 0 0 0 1px var(--border), 0 10px 40px rgba(0,0,0,0.8);
     background:linear-gradient(135deg, #12122a, #1a1a3a);
     transition:box-shadow 0.5s ease;
-    flex-shrink:0;
   }
   .album-wrap.playing {
-    box-shadow: 0 0 0 1.5px rgba(232,255,0,0.4), 0 0 50px var(--glow), 0 10px 40px rgba(0,0,0,0.8);
+    box-shadow: 0 0 0 1.5px rgba(232,255,0,0.45), 0 0 55px var(--glow), 0 10px 40px rgba(0,0,0,0.8);
   }
   #albumImg {
     width:100%; height:100%; object-fit:cover;
@@ -117,11 +112,13 @@
     font-size:5rem; opacity:0.15;
   }
 
-  /* Track info — texto más grande */
+  /* Track info */
   .track-col {
+    grid-column:2; grid-row:2;
     display:flex; flex-direction:column;
     justify-content:center;
     gap:10px; min-width:0;
+    padding-bottom:60px; /* espacio para el botón esquina */
   }
   .now-label {
     font-size:0.75rem; font-weight:600; color:var(--muted);
@@ -129,17 +126,17 @@
   }
   .track-title {
     font-family:'Barlow Condensed',sans-serif;
-    font-size:clamp(1.8rem, 5.5vw, 3.2rem);
+    font-size:clamp(2rem, 6vw, 3.6rem);
     font-weight:900; line-height:1.0;
     white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
   }
   .track-artist {
-    font-size:clamp(1.1rem, 3vw, 1.6rem);
+    font-size:clamp(1.1rem, 3vw, 1.8rem);
     font-weight:300; color:var(--muted);
     white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
   }
   .track-album {
-    font-size:clamp(0.8rem, 1.8vw, 1rem);
+    font-size:clamp(0.8rem, 1.8vw, 1.05rem);
     color:rgba(90,90,136,0.6);
     white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
   }
@@ -148,34 +145,25 @@
     background:var(--card); border:1px solid var(--border);
     border-radius:20px; padding:4px 12px;
     font-size:0.7rem; color:var(--muted); width:fit-content;
-    margin-top:4px;
   }
 
-  /* Bottom button */
-  .bottom-row {
-    display:flex; justify-content:center;
-    padding-top:10px;
-  }
-  .spotify-btn {
-    display:flex; align-items:center; justify-content:center; gap:14px;
-    background:#1a2a1a; border:1px solid rgba(30,215,96,0.25);
-    border-radius:18px;
-    padding:0 36px;
-    height:52px;
-    width:clamp(200px, 40%, 300px);
-    cursor:pointer; text-decoration:none; color:var(--text);
+  /* Spotify icon — esquina inferior derecha */
+  .spotify-corner {
+    position:fixed;
+    bottom:14px; right:14px;
+    width:54px; height:54px;
+    border-radius:16px;
+    background:#1a2a1a;
+    border:1px solid rgba(30,215,96,0.25);
+    display:flex; align-items:center; justify-content:center;
+    text-decoration:none;
     transition:all 0.12s ease;
     -webkit-user-select:none; user-select:none;
+    z-index:10;
   }
-  .spotify-btn:active { transform:scale(0.95); background:#1DB954; }
-  .spotify-btn:active .spotify-label { color:#000; }
-  .spotify-btn:active svg { color:#000; }
-  .spotify-btn svg { width:26px; height:26px; color:#1DB954; flex-shrink:0; }
-  .spotify-label {
-    font-family:'Barlow Condensed',sans-serif;
-    font-size:1rem; font-weight:600;
-    letter-spacing:0.1em; text-transform:uppercase; color:#1DB954;
-  }
+  .spotify-corner svg { width:28px; height:28px; color:#1DB954; }
+  .spotify-corner:active { transform:scale(0.9); background:#1DB954; }
+  .spotify-corner:active svg { color:#000; }
 </style>
 </head>
 <body>
@@ -196,33 +184,29 @@
     </div>
   </div>
 
-  <div class="main-row">
-    <div class="album-wrap" id="albumWrap">
-      <div class="album-placeholder" id="albumPlaceholder">🎵</div>
-      <img id="albumImg" src="" alt="">
-    </div>
-
-    <div class="track-col">
-      <div class="now-label" id="nowLabel">Esperando música...</div>
-      <div class="track-title" id="trackTitle">—</div>
-      <div class="track-artist" id="trackArtist">Abre Spotify y dale al play</div>
-      <div class="track-album" id="trackAlbum"></div>
-      <div class="scrobbles" id="scrobblesBadge" style="display:none">
-        ♫ <span id="scrobblesCount">0</span> scrobbles totales
-      </div>
-    </div>
+  <div class="album-wrap" id="albumWrap">
+    <div class="album-placeholder" id="albumPlaceholder">🎵</div>
+    <img id="albumImg" src="" alt="">
   </div>
 
-  <div class="bottom-row">
-    <a class="spotify-btn" href="spotify://">
-      <svg viewBox="0 0 24 24" fill="currentColor">
-        <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
-      </svg>
-      <span class="spotify-label">Abrir Spotify</span>
-    </a>
+  <div class="track-col">
+    <div class="now-label" id="nowLabel">Esperando música...</div>
+    <div class="track-title" id="trackTitle">—</div>
+    <div class="track-artist" id="trackArtist">Abre Spotify y dale al play</div>
+    <div class="track-album" id="trackAlbum"></div>
+    <div class="scrobbles" id="scrobblesBadge" style="display:none">
+      ♫ <span id="scrobblesCount">0</span> scrobbles totales
+    </div>
   </div>
 
 </div>
+
+<!-- Botón Spotify esquina -->
+<a class="spotify-corner" href="spotify://">
+  <svg viewBox="0 0 24 24" fill="currentColor">
+    <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
+  </svg>
+</a>
 
 <script>
   const API_KEY  = '4dfa3064c023422534817b274234f351';
